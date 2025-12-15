@@ -82,7 +82,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const geminiResponse = await fetch(
-      `AIzaSyBdUR6MzpeP7Jsx_azl38kserqcJT2IBLwkey=${geminiApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiApiKey}`,
       {
         method: 'POST',
         headers: {
