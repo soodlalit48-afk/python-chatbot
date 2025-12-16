@@ -26,7 +26,7 @@ Deno.serve(async (req: Request) => {
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const GEMINI_API_KEY = 'AIzaSyDi2p3jE9bGQhSfmz7eWHD0vxcLztOn4gw';
+    const geminiApiKey = 'AIzaSyDi2p3jE9bGQhSfmz7eWHD0vxcLztOn4gw';
 
     if (!geminiApiKey) {
       throw new Error('Gemini API key not configured');
