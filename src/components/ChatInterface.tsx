@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase, ChatMessage } from '../lib/supabase';
 import { Send, Loader2, LogOut, Coins, AlertCircle, Bot, User as UserIcon } from 'lucide-react';
+import PaymentModal from './PaymentModal';
 
 export default function ChatInterface() {
   const { user, profile, signOut, refreshProfile } = useAuth();
@@ -10,7 +11,7 @@ export default function ChatInterface() {
   const [loading, setLoading] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(true);
   const [error, setError] = useState('');
-  const [showCreditsModal, setShowCreditsModal] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ export default function ChatInterface() {
 
     if (profile.credits <= 0) {
       setError('You have no credits left. Please purchase more credits to continue chatting.');
-      setShowCreditsModal(true);
+      setShowPaymentModal(true);
       return;
     }
 
@@ -122,10 +123,10 @@ export default function ChatInterface() {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setShowCreditsModal(true)}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:from-amber-600 hover:to-orange-600 transition-all transform hover:scale-105"
+              onClick={() => setShowPaymentModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-medium hover:from-amber-600 hover:to-orange-600 transition-all transform hover:scale-105 active:scale-95 animate-pulse-glow"
             >
-              <Coins className="w-4 h-4" />
+              <Coins className="w-4 h-4 animate-spin-slow" />
               <span>{profile?.credits || 0} Credits</span>
             </button>
             <button
@@ -146,8 +147,10 @@ export default function ChatInterface() {
               <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
             </div>
           ) : messages.length === 0 ? (
-            <div className="text-center py-12">
-              <Bot className="w-16 h-16 mx-auto text-gray-400 mb-4" />
+            <div className="text-center py-12 animate-slide-up">
+              <div className="animate-float">
+                <Bot className="w-16 h-16 mx-auto text-gradient-blue-400 mb-4 animate-bounce-in" />
+              </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
                 Welcome to Python & ML Assistant!
               </h2>
@@ -164,7 +167,10 @@ export default function ChatInterface() {
                   <button
                     key={i}
                     onClick={() => setMessage(example)}
-                    className="p-3 text-left text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-md transition-all"
+                    className="p-3 text-left text-sm bg-white border border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg hover:scale-105 transition-all transform active:scale-95 animate-fade-in"
+                    style={{
+                      animationDelay: `${i * 0.1}s`,
+                    }}
                   >
                     {example}
                   </button>
@@ -218,47 +224,26 @@ export default function ChatInterface() {
             <button
               type="submit"
               disabled={loading || !message.trim() || (profile?.credits || 0) <= 0}
-              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 transform hover:scale-105 active:scale-95"
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-xl font-medium hover:from-blue-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2 transform hover:scale-110 active:scale-95 hover:shadow-lg disabled:hover:scale-100"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
-                <Send className="w-5 h-5" />
+                <Send className="w-5 h-5 transition-transform group-hover:translate-x-1" />
               )}
             </button>
           </div>
         </form>
       </main>
 
-      {showCreditsModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 animate-fade-in">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl transform transition-all animate-scale-in">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Coins className="w-8 h-8 text-white" />
-              </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Credits</h2>
-              <p className="text-gray-600 mb-6">
-                You have <span className="font-bold text-2xl text-blue-600">{profile?.credits || 0}</span> credits remaining
-              </p>
-              <div className="bg-gray-50 rounded-lg p-4 mb-6 text-left">
-                <h3 className="font-semibold text-gray-900 mb-2">How it works:</h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Each question costs 1 credit</li>
-                  <li>• New users start with 20 free credits</li>
-                  <li>• Purchase more credits when you run out</li>
-                </ul>
-              </div>
-              <button
-                onClick={() => setShowCreditsModal(false)}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-medium hover:from-blue-700 hover:to-cyan-700 transition-all transform hover:scale-105"
-              >
-                Got it!
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={() => setShowPaymentModal(false)}
+        onSuccess={async () => {
+          await refreshProfile();
+          setShowPaymentModal(false);
+        }}
+      />
     </div>
   );
 }
